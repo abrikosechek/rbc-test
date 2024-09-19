@@ -1,7 +1,11 @@
 <template>
   <v-app>
     <v-app-bar :elevation="1">
-      <v-app-bar-title>RBC test</v-app-bar-title>
+      <v-app-bar-title to="/news">
+        <nuxt-link to="/" style="color: unset; text-decoration: unset">
+          RBC test
+        </nuxt-link>
+      </v-app-bar-title>
 
       <template #append>
         <v-btn
@@ -16,7 +20,6 @@
 
     <v-main>
       <NuxtPage />
-      <p>{{ theme.global.name.value }}</p>
     </v-main>
   </v-app>
 </template>
