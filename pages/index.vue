@@ -9,6 +9,20 @@
     <div class="feed-grid">
       <v-sheet class="feed-grid__filters" rounded>
         <v-text-field v-model="formFilter" label="Поиск по названию" />
+        <div class="feed-grid__filters__date">
+          <v-btn
+            icon="md:edit_calendar"
+            @click="showDatePicker = !showDatePicker"
+          >
+          </v-btn>
+          <v-date-picker
+            v-if="showDatePicker"
+            v-model="datePickerValue"
+            class="feed-grid__filters__date__picker"
+            elevation="24"
+            range
+          />
+        </div>
       </v-sheet>
 
       <v-sheet
@@ -36,17 +50,19 @@
       <v-pagination v-model="choosedPage" :length="paginationLength" />
     </div>
     <p>
-      {{ formFilter }}
+      {{ datePickerValue }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { format } from "date-fns";
+import { format, addDays, isAfter, isBefore } from "date-fns";
+import "vuetify-daterange-picker/dist/vuetify-daterange-picker.css";
 
 const pageLength: number = 5;
 const feed = useFeedStore();
 const formFilter = ref(null);
+const showDatePicker = ref(false);
 
 feed.fetchFeed();
 
@@ -55,11 +71,18 @@ const formatDate = (time: string) => {
 };
 
 const choosedPage = ref(1);
+const paginationLength = computed(() => {
+  return Math.ceil(feed.items.length / pageLength) || 1;
+});
+
+const datePickerValue = ref<Date | null>(null);
+
 const filteredFeed = computed(() => {
   let result = [...feed.items].slice(
     (choosedPage.value - 1) * pageLength,
     choosedPage.value * pageLength
   );
+  // search filter
   if (formFilter.value) {
     result = result.filter((article) => {
       return article.title
@@ -67,10 +90,18 @@ const filteredFeed = computed(() => {
         .includes(`${formFilter.value}`.toLowerCase());
     });
   }
+  // date filter
+  if (datePickerValue.value) {
+    const minDate = datePickerValue.value;
+    const maxDate = addDays(datePickerValue.value, 1);
+    console.log(minDate, maxDate);
+    result = result.filter((article) => {
+      return (
+        isAfter(article.pubDate, minDate) && isBefore(article.pubDate, maxDate)
+      );
+    });
+  }
   return result;
-});
-const paginationLength = computed(() => {
-  return Math.ceil(feed.items.length / pageLength) || 1;
 });
 </script>
 
@@ -110,6 +141,16 @@ const paginationLength = computed(() => {
   &__filters {
     display: flex;
     gap: 16px;
+
+    &__date {
+      position: relative;
+
+      &__picker {
+        position: absolute !important;
+        right: 0;
+        top: 100%;
+      }
+    }
   }
 
   &__item {

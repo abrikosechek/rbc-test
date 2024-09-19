@@ -18,7 +18,8 @@
     "pinia": "^2.2.2",
     "rss-parser": "^3.13.0",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "vuetify-daterange-picker": "^3.2.0"
   },
   "devDependencies": {
     "material-design-icons-iconfont": "^6.7.0",
