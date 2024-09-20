@@ -6,7 +6,7 @@ export interface IParsedFeed {
     url: string;
   };
   items: IFeedItem[];
-  language: string;
+  language?: string;
   link: string;
   title: string;
 }

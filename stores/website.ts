@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import Parser from "rss-parser";
+import type { IParsedFeed, IFeedItem } from "~/types/feed";
 
 interface IFetchFeed {
   data: {
@@ -9,12 +10,12 @@ interface IFetchFeed {
 
 export const useFeedStore = defineStore("feedStore", {
   state: () => ({
-    items: [] as any,
+    items: [] as IFeedItem[],
     loaded: false as boolean,
   }),
   actions: {
     async fetchFeed() {
-      const parser = new Parser();
+      const parser = new Parser<any, IParsedFeed>();
 
       const requestUrl: string =
         "http://static.feed.rbc.ru/rbc/logical/footer/news.rss";
@@ -26,7 +27,7 @@ export const useFeedStore = defineStore("feedStore", {
       this.items = parsedFeed.items;
       this.loaded = true;
     },
-    async getArticleByIsoDate(isoDate: any) {
+    async getArticleByIsoDate(isoDate: string | string[]) {
       if (this.items.length == 0) {
         await this.fetchFeed();
       }
